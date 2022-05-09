@@ -1,0 +1,22 @@
+﻿@model List<BusinessLayer.DTO.CountryDto>
+@if (ViewBag.CountryName != null)
+{
+
+    <table class="table table-bordered">
+        <tr>
+            <th>Ülke</th>
+            <th>Ülke Başkent</th>
+            <th>Ülke Kısaltması</th>
+            <th>Ülke Para Birimi</th>
+            <th>Kaydet</th>
+        </tr>
+        <tr>
+            <td id="ctName">@Model.FirstOrDefault().CountryName </td>
+            <td id="gridCapital">@Model.FirstOrDefault().Capital</td>
+            <td id="gridCa">@Model.FirstOrDefault().CountryCa</td>
+            <td id="gridCurrency">@Model.FirstOrDefault().Currency</td>
+            <td><button class="btn btn-warning" onclick="countryAdd()"> Kaydet</button></td>
+        </tr>
+    </table>
+
+}

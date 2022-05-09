@@ -1,0 +1,93 @@
+﻿
+@{
+    ViewBag.Title = "Ana Sayfa";
+}
+
+<br />
+<select name="country" id="countrySelect" class="form-control">
+    <option value="" disabled selected>Ülke Seç</option>
+    @foreach (var item in ViewBag.country)
+    {
+        <option value="@item.Text">@item.Text</option>
+    }
+</select>
+<br />
+
+<div id="countryTable">
+    @*Tablomuzu ajax ile bu kısıma basıyoruz*@
+</div>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://code.jquery.com/jquery-2.2.4.js" integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI=" crossorigin="anonymous"></script>
+<script>
+    /* Dropdowndan ülke seçildiği anda tetiklenecek function*/
+
+    $('#countrySelect').change(function () {
+        $("#countryTable").html("<div>Yükleniyor...</div>");
+        var value = $(this).val();
+        $.ajax({
+            url: '/Home/GetCountryListPartial/',
+            type: 'get',
+            async: false,
+            dataType: 'html',
+            data: { 'Name': value },
+            success: function (data) {
+                setTimeout(function () { $("#countryTable").html(data); }, 750);
+            },
+            error: function (data) {
+                alert("Hata");
+            }
+        });
+    });
+    function countryAdd() {
+        Swal.fire({
+            title: 'Bu ülkeyi kaydetmek istiyormusun?',
+            showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: 'Kaydet',
+            denyButtonText: `Kaydetme`,
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+                var Cur = $("#gridCurrency").text();
+                var Ca = $("#gridCa").text();
+                var Capital = $("#gridCapital").text();
+                var Contry = $('#ctName').text()
+                $.ajax({
+                    url: '/Home/AddCountryAj/',
+                    type: 'Post',
+                    data: { 'country': Contry, 'ca': Ca, 'capital': Capital, 'currency': Cur },
+                    success: function (result) {
+                        if (result == "true") {
+                            Swal.fire({
+                                position: 'top-end',
+                                icon: 'success',
+                                title: 'Ülke başarıyla kaydedildi.',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        }
+                        if (result == "dolu") {
+                            Swal.fire({
+                                title: 'Bu ülke zaten kayıtlı',
+                                showClass: {
+                                    popup: 'animate__animated animate__fadeInDown'
+                                },
+                                hideClass: {
+                                    popup: 'animate__animated animate__fadeOutUp'
+                                }
+                            })
+                        }
+                        if (result == "hata") {
+                            alert("Hata bir sorun oluştu lütfen daha sonra tekrar deneyin.");
+                        }
+                    },
+                    error: function (result) {
+                        alert("Hata");
+                    }
+                });
+            } else if (result.isDenied) {
+                Swal.fire('Kaydedilme işlemi iptal edildi.')
+            }
+        })
+    }
+</script>
